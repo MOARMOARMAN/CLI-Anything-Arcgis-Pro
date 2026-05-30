@@ -33,6 +33,15 @@ Agent ──MCP──► mcp_server.py ──HTTP─► in-Pro add-in ──Queu
                                                                      (you watch)
 ```
 
+## Architecture
+
+Code implementation flow — the live bridge, the headless CLI, and how the add-in
+is built and loaded:
+
+![Implementation flow](docs/implementation-flow.png)
+
+> Source: [`docs/implementation-flow.canvas`](docs/implementation-flow.canvas) (JSON Canvas / Obsidian).
+
 ## Install (headless CLI)
 
 Install into ArcGIS Pro's bundled Python (`arcgispro-py3`), which provides ArcPy:
