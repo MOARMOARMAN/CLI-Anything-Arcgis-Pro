@@ -21,7 +21,7 @@ Homepage = "https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro"
 Repository = "https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro"
 
 [project.scripts]
-cli-anything-arcgis-pro = "cli_anything_arcgis_pro.__main__:cli"
+cli-anything-arcgis-pro = "cli_anything_arcgis_pro.__main__:main"
 
 [tool.setuptools]
 packages = ["cli_anything_arcgis_pro"]

@@ -42,6 +42,13 @@ Then:
 cli-anything-arcgis-pro --json info
 ```
 
+**Installed into a different Python?** (e.g. via the CLI-Hub, which installs with
+its own interpreter.) That's fine — the `cli-anything-arcgis-pro` command
+**self-dispatches** into ArcGIS Pro's `arcgispro-py3` interpreter when ArcPy isn't
+present in the current one. It locates Pro via common install paths, the
+`SOFTWARE\ESRI\ArcGISPro` registry key, or the `CLI_ANYTHING_ARCGIS_PYTHON`
+environment variable (set this to override).
+
 Requires: a licensed **ArcGIS Pro** install (provides ArcPy). Verified on ArcGIS
 Pro 3.4 / ArcPy 3.4.3 / .NET 8.
 
