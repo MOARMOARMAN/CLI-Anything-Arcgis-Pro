@@ -346,10 +346,9 @@ namespace ProSimpleMapExport
             };
         }
 
-        // NOTE: compiles against ArcGIS Pro 3.4 (.NET 8) assemblies — the renderer
-        // API usage (CreateRenderer/SetRenderer, the *RendererDefinition types, the
-        // ClassificationMethod enum) is verified at build time. Runtime behavior
-        // against a live layer still wants a GUI smoke-test before you fully trust it.
+        // NOTE: verified end to end — compiles against ArcGIS Pro 3.4 (.NET 8)
+        // assemblies AND smoke-tested live: graduated colors applied to a layer in a
+        // running Pro session via the bridge (returned ok:true, the map recolored).
         // Mirrors the verified headless `map symbology` semantics.
         private static object DoSymbology(JsonElement root)
         {
