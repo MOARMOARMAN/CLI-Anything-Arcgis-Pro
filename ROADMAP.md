@@ -57,7 +57,7 @@ The analysis + export half is in place.
 | Map authoring (headless) | `map add-data`, `map symbology graduated`, `map symbology unique` — *new, [#4](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/pull/4)* |
 | Live MCP tools | `arcgis_ping`, `arcgis_query`, `arcgis_run_gp`, `arcgis_zoom_to`, `arcgis_export_layout` |
 | MCP test harness | mock bridge + `tools/list`/`tools/call` tests (license-free) — *new, [#5](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/pull/5)* |
-| MCP tool (Python shipped, .NET pending) | `arcgis_symbology` — forwarding mock-tested; live `DoSymbology` handler awaits a Pro-SDK build — *[#5](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/pull/5)* |
+| MCP tool `arcgis_symbology` | Python tool + forwarding mock-tested; `DoSymbology` .NET handler **compiles against Pro 3.4** — pending only a live GUI smoke-test — *[#5](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/pull/5)* |
 
 What's missing: the agent can run a buffer, but it can't yet **add the result to a map, symbolize it, compose a layout, or edit features** — that's the rest of this roadmap.
 
@@ -82,7 +82,7 @@ Concrete MCP work, roughly in dependency order:
 - ✅ 🔌 🐍 **`tools/list` + `tools/call` tests** — *shipped in [#5]* — assert tools come back with valid schemas and that calls forward the right command. Extend these as you add tools.
 - 🔌 🐍 **Protocol completeness** — a proper `initialize` handshake with advertised `capabilities`, correct JSON-RPC error codes (`-32601` unknown method, `-32602` bad params), and graceful bridge-down handling instead of a raw traceback.
 - 🔌 🐍 **Richer tool schemas** — tighten each tool's `inputSchema` (required fields, enums, descriptions) so agents call them correctly the first time. Cheap, high-leverage for agent reliability.
-- 🔌 🐍 **Expose new capabilities as tools** — as Phase 1/2 land, add the matching MCP tool: `arcgis_add_data`, `arcgis_set_layer`, ~~`arcgis_symbology`~~ ✅, `arcgis_select`, `arcgis_edit`. The Python tool definition + schema + mock-bridge test is 🐍 license-free; only the `🏗️` .NET command behind it needs the add-in. **You can ship and test the MCP side independently** — `arcgis_symbology` ([#5](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/pull/5)) is the worked example: Python tool shipped + mock-tested, with the `🏗️` `DoSymbology` handler written but pending a Pro-SDK build.
+- 🔌 🐍 **Expose new capabilities as tools** — as Phase 1/2 land, add the matching MCP tool: `arcgis_add_data`, `arcgis_set_layer`, ~~`arcgis_symbology`~~ ✅, `arcgis_select`, `arcgis_edit`. The Python tool definition + schema + mock-bridge test is 🐍 license-free; only the `🏗️` .NET command behind it needs the add-in. **You can ship and test the MCP side independently** — `arcgis_symbology` ([#5](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/pull/5)) is the worked example: Python tool shipped + mock-tested, and the `DoSymbology` .NET handler now **compiles against the real Pro 3.4 assemblies** (`dotnet build` — no Visual Studio needed; the `.csproj` references the Pro install directly). Only a live GUI smoke-test remains.
 - 🔌 🐍 **Bridge auth** ([#3](https://github.com/Jasper0122/CLI-Anything-Arcgis-Pro/issues/3)) — the bridge's `127.0.0.1` listener has no auth/origin check. Add a shared-secret token the MCP server sends and the bridge verifies.
 
 Every `**MCP:**` line in the phases below is one of these — pick a capability, build its tool + schema + mock-tested forwarding, and it's a complete, mergeable contribution even before the live executor exists.

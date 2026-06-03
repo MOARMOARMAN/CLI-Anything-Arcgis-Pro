@@ -346,10 +346,11 @@ namespace ProSimpleMapExport
             };
         }
 
-        // NOTE: this live handler is written to the ArcGIS Pro SDK API but has NOT
-        // been compiled/run here (that needs Visual Studio + the Pro SDK). It mirrors
-        // the verified headless `map symbology` semantics. Build the add-in and smoke
-        // -test against a live layer before relying on it.
+        // NOTE: compiles against ArcGIS Pro 3.4 (.NET 8) assemblies — the renderer
+        // API usage (CreateRenderer/SetRenderer, the *RendererDefinition types, the
+        // ClassificationMethod enum) is verified at build time. Runtime behavior
+        // against a live layer still wants a GUI smoke-test before you fully trust it.
+        // Mirrors the verified headless `map symbology` semantics.
         private static object DoSymbology(JsonElement root)
         {
             string layerName = Str(root, "layer");
@@ -416,7 +417,7 @@ namespace ProSimpleMapExport
             {
                 case "equalinterval": return ClassificationMethod.EqualInterval;
                 case "quantile": return ClassificationMethod.Quantile;
-                case "geometricinterval": return ClassificationMethod.GeometricInterval;
+                case "geometricinterval": return ClassificationMethod.GeometricalInterval;
                 case "standarddeviation": return ClassificationMethod.StandardDeviation;
                 case "naturalbreaks":
                 default: return ClassificationMethod.NaturalBreaks;
