@@ -89,7 +89,12 @@ TOOLS = [
                     "type": "string",
                     "description": "布局名（可选；缺省用活动布局，否则用第一个布局）。",
                 },
-                "dpi": {"type": "integer", "description": "分辨率 DPI（默认 300）。"},
+                "dpi": {
+                    "type": "integer",
+                    "enum": [72, 96, 150, 200, 300, 400, 600, 1200],
+                    "default": 300,
+                    "description": "分辨率 DPI（默认 300）。"
+                },
             },
             "required": ["out"],
         },
@@ -154,6 +159,7 @@ TOOLS = [
                 },
                 "allow_delete": {
                     "type": "boolean",
+                    "default": False, 
                     "description": (
                         "Safety opt-in. Destructive tools (Delete*/Truncate*) are BLOCKED by "
                         "default to protect shapefiles, feature classes and geodatabases. Set "
@@ -186,6 +192,9 @@ TOOLS = [
                 },
                 "classes": {
                     "type": "integer",
+                    "minimum": 2,
+                    "maximum": 32,
+                    "default": 5,
                     "description": "graduated 的分级数（默认 5；unique 忽略）。",
                 },
                 "method": {

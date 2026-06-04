@@ -92,6 +92,27 @@ def test_tools_list_advertises_symbology_with_valid_schema():
     assert schema["required"] == ["layer", "renderer", "field"]
     assert set(schema["properties"]["renderer"]["enum"]) == {"graduated", "unique"}
 
+    assert schema["properties"]["classes"]["minimum"] == 2
+    assert schema["properties"]["classes"]["maximum"] == 32
+    assert schema["properties"]["classes"]["default"] == 5
+
+    methods = {"NaturalBreaks", "EqualInterval", "Quantile", "GeometricInterval", "StandardDeviation"}
+    assert set(schema["properties"]["method"]["enum"]) == methods
+
+def test_tools_list_export_layout_with_valid_schema():
+    resp = mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    tools = {t["name"]: t for t in resp["result"]["tools"]}
+    assert "arcgis_export_layout" in tools
+    schema = tools["arcgis_export_layout"]["inputSchema"]
+    assert set(schema["properties"]["dpi"]["enum"]) == {72, 96, 150, 200, 300, 400, 600, 1200}
+    assert schema["properties"]["dpi"]["default"] == 300
+
+def test_tools_list_run_gp():
+    resp = mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    tools = {t["name"]: t for t in resp["result"]["tools"]}
+    assert "arcgis_run_gp" in tools
+    schema = tools["arcgis_run_gp"]["inputSchema"]
+    assert schema["properties"]["allow_delete"]["default"] is False
 
 def test_unknown_tool_returns_method_not_found():
     resp = _call("arcgis_bogus", {})
