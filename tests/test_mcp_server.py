@@ -95,6 +95,7 @@ def test_tools_list_advertises_symbology_with_valid_schema():
     assert schema["properties"]["classes"]["minimum"] == 2
     assert schema["properties"]["classes"]["maximum"] == 32
     assert schema["properties"]["classes"]["default"] == 5
+    assert schema["properties"]["method"]["default"] == "NaturalBreaks"
 
     methods = {"NaturalBreaks", "EqualInterval", "Quantile", "GeometricInterval", "StandardDeviation"}
     assert set(schema["properties"]["method"]["enum"]) == methods
@@ -106,6 +107,14 @@ def test_tools_list_export_layout_with_valid_schema():
     schema = tools["arcgis_export_layout"]["inputSchema"]
     assert set(schema["properties"]["dpi"]["enum"]) == {72, 96, 150, 200, 300, 400, 600, 1200}
     assert schema["properties"]["dpi"]["default"] == 300
+
+def test_tools_list_query():
+    resp = mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    tools = {t["name"]: t for t in resp["result"]["tools"]}
+    assert "arcgis_query" in tools
+    schema = tools["arcgis_query"]["inputSchema"]
+    assert schema["properties"]["limit"]["minimum"] == 0
+    assert schema["properties"]["limit"]["default"] == 50
 
 def test_tools_list_run_gp():
     resp = mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})

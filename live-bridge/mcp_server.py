@@ -67,33 +67,43 @@ TOOLS = [
     {
         "name": "arcgis_ping",
         "description": (
-            "读取当前打开的 ArcGIS Pro 工程状态：工程名、所有地图、所有布局、"
-            "以及当前活动的地图/布局。发其它命令前先用它了解打开的是什么工程。"
+            "Read the state of the currently open ArcGIS Pro project. Gather the following details: "
+            "Project name, all maps, all layouts, and currently active map/layout. "
+            "Call this tool before using other tools to discover what project is open and details about the project."
         ),
         "inputSchema": {"type": "object", "properties": {}, "required": []},
     },
     {
         "name": "arcgis_export_layout",
         "description": (
-            "把活着的 ArcGIS Pro 工程里的某个布局导出为 PDF。导出在用户正开着的 "
-            "Pro 实例内执行（用户能看到），返回输出路径与文件大小。"
+            "Export a specific layout of the currently live ArcGIS Pro Project to a PDF file. "
+            "Export in the user's currently open ArcGIS Pro instance so they can watch it happen. "
+            "Return the output path and the file size."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "out": {
                     "type": "string",
-                    "description": r"输出 PDF 的绝对路径，例如 C:\temp\map.pdf",
+                    "description": (
+                        "Absolute return path for output PDF. "
+                        r"For example C:\temp\map.pdf"
+                    ),
                 },
                 "layout": {
                     "type": "string",
-                    "description": "布局名（可选；缺省用活动布局，否则用第一个布局）。",
+                    "description": (
+                        "Name of layout to export (Optional) "
+                        "If left empty, default to active layout or the first layout if no currently active layout"
+                    ),
                 },
                 "dpi": {
                     "type": "integer",
                     "enum": [72, 96, 150, 200, 300, 400, 600, 1200],
                     "default": 300,
-                    "description": "分辨率 DPI（默认 300）。"
+                    "description": (
+                        "Export resolution in DPI. Defaulted to 300"
+                    )
                 },
             },
             "required": ["out"],
@@ -102,16 +112,25 @@ TOOLS = [
     {
         "name": "arcgis_zoom_to",
         "description": (
-            "把活动地图视图缩放到某个要素图层（用户能在窗口里看到地图动）。"
-            "可选 where 条件：会先选中匹配要素再缩放到选集。需要 Pro 当前处于地图视图（非布局）。"
+            "Zoom the active Map view to a specific feature layer. (the user should see the map pan/zoom in their application window). "
+            "Optional 'where' parameter: selects matching features first, then zooms into that specific section. "
+            "Requires ArcGIS Pro to be in Map view, not Layout view."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "layer": {"type": "string", "description": "要缩放到的要素图层名。"},
+                "layer": {
+                    "type": "string",
+                    "description": (
+                        "Name of feature layer to zoom to."
+                    )
+                },
                 "where": {
                     "type": "string",
-                    "description": "可选 SQL 条件，如 \"POP > 1000\"；给了就缩放到选中要素。",
+                    "description": (
+                        "Optional SQL Parameter: For example \"POP > 1000\". "
+                        "If provided, matching features are selected, then view is zoomed to selection."
+                    )
                 },
             },
             "required": ["layer"],
@@ -120,15 +139,31 @@ TOOLS = [
     {
         "name": "arcgis_query",
         "description": (
-            "查询活工程里某要素图层的属性，返回结构化的行（不含几何）。可按 where 过滤、限制行数。"
+            "Queries attributes of the feature layer of the currently live ArcGIS project and returns in structured rows (excluding geometry). "
+            "Supports filtering through 'where' parameter and limiting returned row counts."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "layer": {"type": "string", "description": "要素图层名。"},
-                "where": {"type": "string", "description": "可选 SQL where 条件。"},
-                "map": {"type": "string", "description": "可选地图名（缺省用活动/第一个地图）。"},
-                "limit": {"type": "integer", "description": "最多返回多少行（默认 50，0=不限）。"},
+                "layer": {"type": "string", "description": "The name of target Feature Layer. "},
+                "where": {"type": "string", "description": "Optional: SQL query 'where' parameter used to filter the features"},
+                "map": {
+                    "type": "string",
+                    "description": (
+                        "The name of the map (Optional) "
+                        "If left empty, default to current active map and if no map is currently active, fall back to the first map."
+                    )
+                },
+                "limit": {
+                    "type": "integer", 
+                    "default": 50,
+                    "minimum": 0,
+                    "description": (
+                        "Limit on returned rows. "
+                        "Defaults to 50; "
+                        "Set to 0 for unlimited rows."
+                    )
+                },
             },
             "required": ["layer"],
         },
@@ -136,25 +171,29 @@ TOOLS = [
     {
         "name": "arcgis_run_gp",
         "description": (
-            "在活工程上运行任意 ArcGIS 地理处理工具（整个 ArcToolbox：分析/管理/转换/栅格…）。"
-            "输出图层会自动加到当前地图（用户能看到）。tool 用点号写法如 'analysis.Buffer'、"
-            "'management.Clip'；params 是按工具签名顺序排列的位置参数字符串数组。"
-            "例：tool='analysis.Buffer'，params=['roads','roads_buf','100 Meters']。"
+            "Execute any ArcGIS geoprocessing tool on the live project. "
+            "(Supports the entire ArcToolbox: analysis, management, conversion, sa, etc.) "
+            "Output layers will be automatically added to the current active map. (This process is visible to the user). "
+            "Specify tool usage utilizing dot notation ('toolbox_alias.Toolname'). For example: 'analysis.Buffer', 'management.Clip'; "
+            "The 'params' field is an ordered array of positional argument strings. "
+            "The ordering must exactly match the tool's official ArcToolbox function signature. "
+            "Example: tool='analysis.Buffer', params=['roads','roads_buf','100 Meters']."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "tool": {
                     "type": "string",
-                    "description": "工具名，点号写法，如 analysis.Buffer / management.Dissolve / sa.Slope。",
+                    "description": "Tool name in dot notation, e.g. 'analysis.Buffer', 'management.Dissolve', 'sa.Slope'",
                 },
                 "params": {
                     "type": "array",
                     "items": {"type": "string"},
                     "description": (
-                        "按工具参数顺序的位置参数（字符串）。"
-                        "输入/输出强烈建议用数据集全路径（如 C:\\...\\x.gdb\\fc），"
-                        "图层名在后台 GP 里解析不可靠。距离等参数如 '500 Meters'。"
+                        "An ordered array of positional argument strings that follow the ordering of the tool's official ArcToolbox function signature. "
+                        "Inputs and outputs are strongly recommended to use absolute dataset paths. (Example: C:\\...\\x.gdb\\fc) "
+                        "as short layer names are unreliable in the background geoprocessing environment. "
+                        "Distance or value parameters should include units (e.g., '500 Meters') when applicable."
                     ),
                 },
                 "allow_delete": {
@@ -173,32 +212,47 @@ TOOLS = [
     {
         "name": "arcgis_symbology",
         "description": (
-            "给活工程里某要素图层套用渲染器，让地图会说话——用户能在 Pro 窗口里立刻看到变色。"
-            "renderer='graduated' 用数值字段做分级配色（专题图主力）；'unique' 用分类字段每个值一种颜色。"
-            "例：layer='tracts', renderer='graduated', field='MEDINCOME', classes=5, ramp='Viridis'。"
+            "Applies a symbology render to a specific feature layer within the currently active project and "
+            "instantly updates the visual display within the ArcGIS Pro window. "
+            "Supported renderers: "
+            "'graduated' uses a numerical field for classified color styling. "
+            "'unique' uses categorical fields for distinct colors for each unique value. "
+            "Example: layer='tracts', renderer='graduated', field='MEDINCOME', classes=5, ramp='Viridis'."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "layer": {"type": "string", "description": "要渲染的要素图层名。"},
+                "layer": {"type": "string", "description": "The name of the target feature layer to be rendered."},
                 "renderer": {
                     "type": "string",
                     "enum": ["graduated", "unique"],
-                    "description": "graduated=数值字段分级色；unique=分类字段唯一值色。",
+                    "description": (
+                        "The types of symbology renderers to apply. "
+                        "'graduated' uses numerical field for classified color styling. "
+                        "'unique' assigns distinct color to each unique categorical value."
+                    )
                 },
                 "field": {
                     "type": "string",
-                    "description": "用于渲染的字段。graduated 需数值字段；unique 用分类字段。",
+                    "description": (
+                        "The name of the attribute field used for rendering. "
+                        "'graduated' required a numerical field; "
+                        "'unique' requires a categorical field."
+                    )
                 },
                 "classes": {
                     "type": "integer",
                     "minimum": 2,
                     "maximum": 32,
                     "default": 5,
-                    "description": "graduated 的分级数（默认 5；unique 忽略）。",
+                    "description": (
+                        "The number of classification classes. Applicable to 'graduated' rendering. Ignored for 'unique' rendering. "
+                        "(Defaults to 5)"
+                    )
                 },
                 "method": {
                     "type": "string",
+                    "default": "NaturalBreaks",
                     "enum": [
                         "NaturalBreaks",
                         "EqualInterval",
@@ -206,10 +260,30 @@ TOOLS = [
                         "GeometricInterval",
                         "StandardDeviation",
                     ],
-                    "description": "graduated 的分类方法（默认 NaturalBreaks；unique 忽略）。",
+                    "description": (
+                        "The classification methods: "
+                        "Defaults to NaturalBreaks - Good for unevenly distributed data. "
+                        "Equal Interval - Good for Uniform ranges/percentages. "
+                        "Quantile - Good for well-distributed or linear data. "
+                        "GeometricInterval - Good for Highly skewed data. "
+                        "StandardDeviation - Good for highlighting anomalies in the data. "
+                        "Ignored for 'unique' rendering."
+                    )
                 },
-                "ramp": {"type": "string", "description": "色带名，如 'Viridis'（可选）。"},
-                "map": {"type": "string", "description": "可选地图名（缺省用活动/第一个地图）。"},
+                "ramp": {
+                    "type": "string", 
+                    "description": (
+                        "The name of the color ramp to apply (Optional). "
+                        "Example: 'Viridis'"
+                    )
+                },
+                "map": {
+                    "type": "string", 
+                    "description": (
+                        "The name of the map (Optional) "
+                        "If left empty, default to current active map and if no map is currently active, fall back to the first map."
+                    )
+                },
             },
             "required": ["layer", "renderer", "field"],
         },
